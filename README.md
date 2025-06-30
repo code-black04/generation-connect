@@ -158,7 +158,7 @@ If you use or adapt this project, please credit this repository and author
 ---
 
 ## 📄 Documentation and Citations
-All citations and references are included in the **[Technical Document](https://github.com/code-black04/generations-connect)** folder as part of the technical documentation.
+All citations and references are included in the **[Technical Document](https://github.com/code-black04/generation-connect/blob/main/Generation%20Connect%20Technical%20Report.pdf)** folder as part of the technical documentation.
 
 ---
 
