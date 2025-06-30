@@ -1,0 +1,112 @@
+version: '2'
+services:
+  nginx:
+    container_name: gc-nginx
+    image: gc-nginx-image
+    build:
+      context: backend/docker/nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./backend/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro
+      - ./backend/docker/nginx/ssl/:/etc/ssl/:ro
+      - ./logs/nginx:/var/log/nginx
+    depends_on:
+      - app
+      - api
+
+  db:
+    container_name: gc-postgres-db
+    image: gc-postgres-db-image
+    build:
+      context: backend/docker/postgres
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_DB: gc-db
+      POSTGRES_USER: gc-user
+      POSTGRES_PASSWORD: gc-password
+    ports:
+      - "5432:5432"
+    volumes:
+      - "gc-postgres-db-data:/var/lib/postgresql/data"
+      - ./backend/docker/postgres/init-db:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gc-user -d gc-db"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  neo4jdb:
+    container_name: gc-neo4j-db
+    image: gc-neo4j-db-image
+    build:
+      context: backend/docker/neo4j
+      dockerfile: Dockerfile
+    environment:
+      NEO4J_AUTH: neo4j/gc-family-password
+      NEO4J_dbms.default_database: gc-family-db
+    ports:
+      - "7687:7687"
+      - "7474:7474"
+    volumes:
+      - "gc-neo4j-db-data:/var/lib/neo4j/data"
+      - ./backend/neo4j.conf:/conf/neo4j.conf:ro
+    healthcheck:
+      test: [ "CMD", "cypher-shell", "-u", "neo4j", "-p", "gc-family-password", "--format", "verbose", "RETURN 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
+    container_name: gc-api
+    image: gc-api-image
+    build:
+      context: backend/docker/tomcat
+      dockerfile: Dockerfile
+    volumes:
+      - "gc_uploaded-media:/app/uploads"
+    ports:
+      - "8080:8080"
+    environment:
+      # Postgres environment variables
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://gc-postgres-db:5432/gc-db
+      - SPRING_DATASOURCE_USERNAME=gc-user
+      - SPRING_DATASOURCE_PASSWORD=gc-password
+      # Neo4j environment variables
+      - SPRING_DATA_NEO4J_URI=bolt://gc-neo4j-db:7687
+      - SPRING_DATA_NEO4J_USERNAME=neo4j
+      - SPRING_DATA_NEO4J_PASSWORD=gc-family-password
+      - SPRING_DATA_NEO4J_DATABASE=gc-family-db
+    depends_on:
+      db:
+        condition: service_healthy
+      neo4jdb:
+        condition: service_healthy
+    links:
+      - db
+      - neo4jdb
+
+  app:
+    container_name: gc-app
+    image: gc-app-image
+    build:
+      context: frontend/
+      dockerfile: Dockerfile
+    stdin_open: true
+    ports:
+      - "3000:3000"
+    volumes:
+      - "gc_node_modules:/app/node_modules"
+      - "./frontend:/app"
+
+volumes:
+  gc-postgres-db-data:
+    name: gc_postgres_db_data_volume
+  gc-neo4j-db-data:
+    name: gc_neo4j_db_data_volume
+  gc_node_modules:
+    name: gc_node_modules_volume
+  gc_uploaded-media:
+    name: gc_uploaded-media_volume

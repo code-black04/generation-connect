@@ -1,0 +1,10 @@
+/backend/target/
+/backend/docker/tomcat/gc-api.jar
+/.idea/
+/logs/error.log
+/backend/.idea/compiler.xml
+/backend/.idea/encodings.xml
+/backend/.idea/jarRepositories.xml
+/backend/.idea/misc.xml
+/backend/.idea/vcs.xml
+/backend/.idea/workspace.xml

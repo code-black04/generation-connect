@@ -1,0 +1,16 @@
+2025/06/30 19:39:11 [notice] 1#1: using the "epoll" event method
+2025/06/30 19:39:11 [notice] 1#1: openresty/1.27.1.2
+2025/06/30 19:39:11 [notice] 1#1: built by gcc 14.2.0 (Alpine 14.2.0) 
+2025/06/30 19:39:11 [notice] 1#1: OS: Linux 6.8.0-59-generic
+2025/06/30 19:39:11 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2025/06/30 19:39:11 [notice] 1#1: start worker processes
+2025/06/30 19:39:11 [notice] 1#1: start worker process 6
+2025/06/30 19:39:18 [info] 6#6: *8 client 172.18.0.1 closed keepalive connection
+2025/06/30 19:39:21 [info] 6#6: *24 client 172.18.0.1 closed keepalive connection
+2025/06/30 19:40:18 [notice] 1#1: signal 3 (SIGQUIT) received, shutting down
+2025/06/30 19:40:18 [notice] 6#6: gracefully shutting down
+2025/06/30 19:40:18 [notice] 6#6: exiting
+2025/06/30 19:40:18 [notice] 6#6: exit
+2025/06/30 19:40:18 [notice] 1#1: signal 17 (SIGCHLD) received from 6
+2025/06/30 19:40:18 [notice] 1#1: worker process 6 exited with code 0
+2025/06/30 19:40:18 [notice] 1#1: exit
